@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.azriel.bankingapp.dto.AccountDto;
 import com.azriel.bankingapp.service.AccountService;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -61,5 +62,13 @@ public class AccountController {
 	public ResponseEntity<String> deleteAccountById(@PathVariable Long id){
 		accountService.deleteAccountById(id);
 		return ResponseEntity.ok("Account was deleted");
+	}
+	
+	@PutMapping("/{id}/transaction")
+	public ResponseEntity<AccountDto> transaction(@PathVariable Long id, @RequestBody ObjectNode objectNode){
+		Long idDestinatary = objectNode.get("id").asLong();
+		double amount = objectNode.get("amount").asDouble();
+		AccountDto account = accountService.transaction(id, idDestinatary, amount);
+		return ResponseEntity.ok(account);
 	}
 }

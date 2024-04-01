@@ -72,5 +72,22 @@ public class AccountServiceImpl implements AccountService{
 		}
 		
 	}
+
+	@Override
+	public AccountDto transaction(Long id, Long idDestinatary, Double amount) {
+		Account accountOrigin = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account does not exist"));
+		Account accountDestinatary = accountRepository.findById(idDestinatary).orElseThrow(() -> new RuntimeException("Account does not exist"));
+		if(accountOrigin.getBalance() < amount) {
+			throw new RuntimeException("the amount is insuffient");
+		}
+		
+		double totalOrigin = accountOrigin.getBalance() - amount;
+		accountOrigin.setBalance(totalOrigin);
+		accountRepository.save(accountOrigin);
+		double totalDestinatary = accountDestinatary.getBalance() + amount;
+		accountDestinatary.setBalance(totalDestinatary);
+		accountRepository.save(accountDestinatary);
+		return AccountMapper.mapToAccountDto(accountDestinatary);
+	}
 	
 }
